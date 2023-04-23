@@ -29,8 +29,10 @@ class GrafanaService
                 'password' => $password,
             ],
         ]);
-
-        return json_decode($response->getBody(), true);
+    
+        $data = json_decode($response->getBody(), true);
+    
+        return $data['id'];
     }
 
     public function authenticateUser($username, $password)
@@ -47,4 +49,15 @@ class GrafanaService
             'url' => config('services.grafana.url') . '/d/' . $data['dashboard']['uid'],
         ];
     }
+// This is for debugging purpose
+    public function testGrafanaApi()
+{
+    try {
+        $response = $this->client->get('/api/org');
+        return json_decode($response->getBody(), true);
+    } catch (\Exception $e) {
+        return $e->getMessage();
+    }
+}
+
 }

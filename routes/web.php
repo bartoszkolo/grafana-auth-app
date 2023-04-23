@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 
+use App\Services\GrafanaService;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -23,3 +24,7 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');
+
+Route::get('/test-grafana-api', function (GrafanaService $grafanaService) {
+    return $grafanaService->testGrafanaApi();
+});
