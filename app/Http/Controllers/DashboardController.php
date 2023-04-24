@@ -14,15 +14,12 @@ class DashboardController extends Controller
     {
         $this->grafanaService = $grafanaService;
     }
-    public function getDashboardIframeUrl($username, $password)
+    public function getDashboardIframeUrl($apiToken, $dashboardUid)
     {
-        $dashboardUid = '1'; // Replace this with the UID of the dashboard you want to display
         $grafanaUrl = rtrim(config('services.grafana.url'), '/');
-        $encodedCredentials = base64_encode("{$username}:{$password}");
-    
-        return "{$grafanaUrl}/d-solo/Td38EXEVz?orgId=1&from=now-5m&to=now&kiosk&panelId=2&auth={$encodedCredentials}";
+        return "{$grafanaUrl}/d/{$dashboardUid}?orgId=1&from=now-5m&to=now&kiosk&auth={$apiToken}";
     }
-
+    
     public function index(Request $request)
     {
         $apiToken = $request->user()->api_token;
@@ -40,6 +37,7 @@ class DashboardController extends Controller
             // Handle the case when there are no dashboards
             return view('dashboard', ['iframeUrl' => null]);
         }
+        return view('home', ['userDashboards' => $userDashboards]);
     }
     
 

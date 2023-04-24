@@ -3,26 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Services\GrafanaService;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    protected $grafanaService;
+
+    public function __construct(GrafanaService $grafanaService)
     {
         $this->middleware('auth');
+        $this->grafanaService = $grafanaService;
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function index()
+    public function index(Request $request)
     {
-        return view('home');
+        $user = $request->user();
+        $apiToken = $user->api_token;
+
+        $userDashboards = $this->grafanaService->getDashboards($apiToken);
+
+        return view('home', ['userDashboards' => $userDashboards]);
     }
 }
