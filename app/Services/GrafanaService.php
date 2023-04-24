@@ -12,8 +12,8 @@ class GrafanaService
     {
         $this->client = new Client([
             'base_uri' => config('services.grafana.url'),
+            'auth' => [config('services.grafana.username'), config('services.grafana.password')],
             'headers' => [
-                'Authorization' => 'Bearer ' . config('services.grafana.service_token'),
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
             ],
@@ -22,18 +22,23 @@ class GrafanaService
 
     public function createUser($email, $username, $password)
     {
-        $response = $this->client->post('/api/admin/users', [
-            'json' => [
-                'email' => $email,
-                'login' => $username,
-                'password' => $password,
-            ],
-        ]);
+        try {
+            $response = $this->client->post('/api/admin/users', [
+                'json' => [
+                    'email' => $email,
+                    'login' => $username,
+                    'password' => $password,
+                ],
+            ]);
     
-        $data = json_decode($response->getBody(), true);
-    
-        return $data['id'];
+            return json_decode($response->getBody(), true);
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            // Inspect the error response
+            $errorResponse = $e->getResponse()->getBody()->getContents();
+            dd($errorResponse); // Dump the error response and exit
+        }
     }
+    
 
     public function authenticateUser($username, $password)
     {

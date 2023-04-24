@@ -34,6 +34,8 @@ return [
     'grafana' => [
         'url' => env('GRAFANA_URL'),
         'service_token' => env('GRAFANA_SERVICE_TOKEN'),
+        'username' => env('GRAFANA_USERNAME'),
+        'password' => env('GRAFANA_PASSWORD'),
     ],
 
 ];
