@@ -13,7 +13,7 @@ class DashboardController extends Controller
         $grafanaUrl = rtrim(config('services.grafana.url'), '/');
         $encodedCredentials = base64_encode("{$username}:{$password}");
     
-        return "{$grafanaUrl}/d-solo/{$dashboardUid}?orgId=1&from=now-5m&to=now&kiosk&panelId=2&auth={$encodedCredentials}";
+        return "{$grafanaUrl}/d-solo/Td38EXEVz?orgId=1&from=now-5m&to=now&kiosk&panelId=2&auth={$encodedCredentials}";
     }
 
     public function index(Request $request)
