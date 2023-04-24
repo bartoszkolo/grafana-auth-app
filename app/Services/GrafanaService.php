@@ -75,4 +75,20 @@ class GrafanaService
     }
 }
 
+public function createApiToken($username)
+{
+    try {
+        $response = $this->client->post('/api/auth/keys', [
+            'json' => [
+                'name' => $username . '-token',
+                'role' => 'Editor', // Set the appropriate role for the user
+            ],
+        ]);
+
+        return json_decode($response->getBody(), true);
+    } catch (\Exception $e) {
+        return $e->getMessage();
+    }
+}
+
 }
