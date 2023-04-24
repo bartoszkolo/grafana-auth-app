@@ -7,6 +7,13 @@ use App\Services\GrafanaService;
 
 class DashboardController extends Controller
 {
+
+    protected $grafanaService;
+
+    public function __construct(GrafanaService $grafanaService)
+    {
+        $this->grafanaService = $grafanaService;
+    }
     public function getDashboardIframeUrl($username, $password)
     {
         $dashboardUid = '1'; // Replace this with the UID of the dashboard you want to display
@@ -17,14 +24,24 @@ class DashboardController extends Controller
     }
 
     public function index(Request $request)
-{
-    $username = $request->user()->name;
-    $password = $request->user()->password; // You may need to adjust this to get the user's plaintext password
-
-    $iframeUrl = $this->getDashboardIframeUrl($username, $password);
-
-    return view('dashboard', ['iframeUrl' => $iframeUrl]);
-}
+    {
+        $apiToken = $request->user()->api_token;
+    
+        // Get the dashboards for the current user
+        $dashboards = $this->grafanaService->getDashboards($apiToken);
+    
+        if (count($dashboards) > 0) {
+            // Get the first dashboard's UID created by the user
+            $dashboardUid = $dashboards[0]['uid'];
+    
+            $iframeUrl = $this->getDashboardIframeUrl($apiToken, $dashboardUid);
+            return view('dashboard', ['iframeUrl' => $iframeUrl]);
+        } else {
+            // Handle the case when there are no dashboards
+            return view('dashboard', ['iframeUrl' => null]);
+        }
+    }
+    
 
     
 }

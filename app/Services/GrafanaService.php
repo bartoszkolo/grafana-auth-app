@@ -64,16 +64,7 @@ class GrafanaService
         return false;
     }
     
-// This is for debugging purpose
-    public function testGrafanaApi()
-{
-    try {
-        $response = $this->client->get('/api/org');
-        return json_decode($response->getBody(), true);
-    } catch (\Exception $e) {
-        return $e->getMessage();
-    }
-}
+
 
 public function createApiToken($username)
 {
@@ -89,6 +80,26 @@ public function createApiToken($username)
     } catch (\Exception $e) {
         return $e->getMessage();
     }
+}
+
+public function getDashboards($apiToken)
+{
+    try {
+        $response = $this->client->get('/api/search', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $apiToken,
+            ],
+        ]);
+        return json_decode($response->getBody(), true);
+    } catch (\Exception $e) {
+        return $e->getMessage();
+    }
+}
+
+public function getDashboardIframeUrl($apiToken, $dashboardUid)
+{
+    $grafanaUrl = rtrim(config('services.grafana.url'), '/');
+    return "{$grafanaUrl}/d/{$dashboardUid}?orgId=1&from=now-5m&to=now&kiosk&auth={$apiToken}";
 }
 
 }
