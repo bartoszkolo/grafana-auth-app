@@ -49,26 +49,27 @@ class RegisterController extends Controller
             'grafana_user_id' => $grafanaUserId,
         ]);
     }
-    public function register(Request $request)
+    protected function register(Request $request)
     {
+        // Validate and create the new user
         $this->validator($request->all())->validate();
-
         $user = $this->create($request->all());
-
-        if ($user instanceof RedirectResponse) {
-            return $user;
+    
+        // Generate an API token for the new user in Grafana
+        $grafanaService = new GrafanaService(); // Make sure to pass the correct parameters if you modified the constructor
+        $apiTokenResponse = $grafanaService->createApiToken($user->name);
+    
+        if (isset($apiTokenResponse['key'])) {
+            // Save the API token in the database
+            $user->api_token = $apiTokenResponse['key'];
+            $user->save();
+        } else {
+            // Handle the error (e.g., show a message to the user, log the error)
         }
-
-        event(new Registered($user));
-
+    
+        // Login and redirect the user
         $this->guard()->login($user);
-
-        if ($response = $this->registered($request, $user)) {
-            return $response;
-        }
-
-        return $request->wantsJson()
-            ? new JsonResponse([], 201)
-            : redirect($this->redirectPath());
+        return $this->registered($request, $user) ?: redirect($this->redirectPath());
     }
+    
 }
