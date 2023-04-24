@@ -42,18 +42,28 @@ class GrafanaService
 
     public function authenticateUser($username, $password)
     {
-        // Implement the method to authenticate a user against Grafana's API using Basic Auth
+        try {
+            $response = $this->client->get('/api/user', [
+                'auth' => [$username, $password],
+            ]);
+    
+            // If the request is successful (status code 200), return true
+            if ($response->getStatusCode() == 200) {
+                return true;
+            }
+        } catch (ClientException $e) {
+            // If the request fails (status code 401, 403, etc.), return false
+            if ($e->getCode() == 401 || $e->getCode() == 403) {
+                return false;
+            }
+    
+            // If the request fails for other reasons, rethrow the exception
+            throw $e;
+        }
+    
+        return false;
     }
-
-    public function getDashboard($dashboardId)
-    {
-        $response = $this->client->get("/api/dashboards/uid/{$dashboardId}");
-        $data = json_decode($response->getBody(), true);
-
-        return [
-            'url' => config('services.grafana.url') . '/d/' . $data['dashboard']['uid'],
-        ];
-    }
+    
 // This is for debugging purpose
     public function testGrafanaApi()
 {

@@ -45,16 +45,16 @@ class LoginController extends Controller
     }
 
     protected function credentials(Request $request)
-{
-    $credentials = $request->only($this->username(), 'password');
-    $username = $credentials[$this->username()];
-    $password = $credentials['password'];
-
-    // Call GrafanaService's authenticateUser method to authenticate against the Grafana API
-    if ($this->grafanaService->authenticateUser($username, $password)) {
-        return $credentials;
+    {
+        $credentials = $request->only($this->username(), 'password');
+        $username = $credentials[$this->username()];
+        $password = $credentials['password'];
+    
+        // Call GrafanaService's authenticateUser method to authenticate against the Grafana API
+        if ($this->grafanaService->authenticateUser($username, $password)) {
+            return $credentials;
+        }
+    
+        return []; // Return an empty array instead of false
     }
-
-    return false;
-}
 }
