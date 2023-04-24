@@ -20,14 +20,12 @@
                 <div class="card-body">
                     <h3>Your Dashboards:</h3>
                     <ul>
-                        @foreach ($userDashboards as $dashboard)
-                            <?php
-                                $dashboardUrl = app('App\Services\GrafanaService')->getDashboardIframeUrl(auth()->user()->api_token, $dashboard['uid']);
-                            ?>
-                            <li>
-                                <a href="{{ $dashboardUrl }}" target="_blank">{{ $dashboard['title'] }}</a>
-                            </li>
-                        @endforeach
+                    @foreach($userDashboards as $dashboard)
+    <li>
+        <a href="{{ route('dashboard.show', ['dashboardUid' => $dashboard['uid']]) }}">{{ $dashboard['title'] }}</a>
+    </li>
+@endforeach
+
                     </ul>
                 </div>
             </div>

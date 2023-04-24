@@ -39,6 +39,15 @@ class DashboardController extends Controller
         }
         return view('home', ['userDashboards' => $userDashboards]);
     }
+
+    public function show(Request $request, $dashboardUid)
+{
+    $apiToken = $request->user()->api_token;
+    $iframeUrl = $this->grafanaService->getDashboardIframeUrl($apiToken, $dashboardUid);
+
+    return view('dashboard_individual', ['iframeUrl' => $iframeUrl]);
+}
+
     
 
     

@@ -28,3 +28,5 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 Route::get('/test-grafana-api', function (GrafanaService $grafanaService) {
     return $grafanaService->testGrafanaApi();
 });
+
+Route::get('/dashboard/{dashboardUid}', [DashboardController::class, 'show'])->name('dashboard.show');
