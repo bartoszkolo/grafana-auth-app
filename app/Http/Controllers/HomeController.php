@@ -19,8 +19,18 @@ class HomeController extends Controller
     {
         $user = $request->user();
         $apiToken = $user->api_token;
+        $userEmail = $user->email;
 
-        $userDashboards = $this->grafanaService->getDashboards($apiToken);
+        // Get the folder ID by the user's email
+        $folderId = $this->grafanaService->getFolderIdByTitle($apiToken, $userEmail);
+
+        if ($folderId !== null) {
+            // Get the dashboards in the folder
+            $userDashboards = $this->grafanaService->getDashboardsInFolder($apiToken, $folderId);
+        } else {
+            // Handle the case when there's no folder with the user's email
+            $userDashboards = [];
+        }
 
         return view('home', ['userDashboards' => $userDashboards]);
     }

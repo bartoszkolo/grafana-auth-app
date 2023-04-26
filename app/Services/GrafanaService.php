@@ -102,4 +102,46 @@ public function getDashboardIframeUrl($apiToken, $dashboardUid)
     return "{$grafanaUrl}/d/{$dashboardUid}?orgId=1&from=now-5m&to=now&kiosk&auth={$apiToken}";
 }
 
+public function getFolderIdByTitle($apiToken, $title)
+{
+    try {
+        $response = $this->client->get('/api/folders', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $apiToken,
+            ],
+        ]);
+
+        $folders = json_decode($response->getBody(), true);
+
+        foreach ($folders as $folder) {
+            if ($folder['title'] === $title) {
+                return $folder['id'];
+            }
+        }
+    } catch (\Exception $e) {
+        return null;
+    }
+
+    return null;
+}
+
+public function getDashboardsInFolder($apiToken, $folderId)
+{
+    try {
+        $response = $this->client->get('/api/search', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $apiToken,
+            ],
+            'query' => [
+                'folderIds' => [$folderId],
+            ],
+        ]);
+
+        return json_decode($response->getBody(), true);
+    } catch (\Exception $e) {
+        return [];
+    }
+}
+
+
 }
