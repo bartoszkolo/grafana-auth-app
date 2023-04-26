@@ -90,11 +90,19 @@ public function getDashboards($apiToken)
                 'Authorization' => 'Bearer ' . $apiToken,
             ],
         ]);
-        return json_decode($response->getBody(), true);
+
+        if ($response->getStatusCode() == 200) {
+            return json_decode($response->getBody(), true);
+        } else {
+            \Log::error("Grafana getDashboards request error: " . $response->getStatusCode() . " - " . $response->getReasonPhrase());
+            return [];
+        }
     } catch (\Exception $e) {
-        return $e->getMessage();
+        \Log::error("Grafana getDashboards exception: " . $e->getMessage());
+        return [];
     }
 }
+
 
 public function getDashboardIframeUrl($apiToken, $dashboardUid)
 {
@@ -112,8 +120,10 @@ public function getFolderIdByTitle($apiToken, $title)
         ]);
 
         $folders = json_decode($response->getBody(), true);
+        \Log::info('All Folders:', ['folders' => $folders]);
 
         foreach ($folders as $folder) {
+            \Log::info('Comparing:', ['folderTitle' => $folder['title'], 'targetTitle' => $title]);
             if ($folder['title'] === $title) {
                 return $folder['id'];
             }
@@ -137,8 +147,11 @@ public function getDashboardsInFolder($apiToken, $folderId)
             ],
         ]);
 
-        return json_decode($response->getBody(), true);
+        $dashboards = json_decode($response->getBody(), true);
+        \Log::info('Dashboards in folder:', $dashboards);
+        return $dashboards;
     } catch (\Exception $e) {
+        \Log::error('Error getting dashboards in folder:', ['message' => $e->getMessage()]);
         return [];
     }
 }
