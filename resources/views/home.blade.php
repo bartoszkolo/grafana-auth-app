@@ -20,12 +20,13 @@
                 <div class="card-body">
                     <h3>Your Dashboards:</h3>
                     <ul>
-                    @foreach($userDashboards as $dashboard)
-    <li>
-        <a href="{{ route('dashboard.show', ['dashboardUid' => $dashboard['uid']]) }}">{{ $dashboard['title'] }}</a>
-    </li>
-@endforeach
-
+                        @foreach($userDashboards as $dashboard)
+                            @if ($dashboard['type'] !== 'dash-folder')
+                                <li>
+                                    <a href="{{ route('dashboard.show', ['dashboardUid' => $dashboard['uid']]) }}">{{ $dashboard['title'] }}</a>
+                                </li>
+                            @endif
+                        @endforeach
                     </ul>
                 </div>
             </div>
