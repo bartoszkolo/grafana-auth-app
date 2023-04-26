@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\DB;
+
 
 class GrafanaService
 {
@@ -21,24 +23,28 @@ class GrafanaService
     }
 
     public function createUser($email, $username, $password)
-    {
-        try {
-            $response = $this->client->post('/api/admin/users', [
-                'json' => [
-                    'email' => $email,
-                    'login' => $username,
-                    'password' => $password,
-                ],
-            ]);
-    
-            return json_decode($response->getBody(), true);
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            // Inspect the error response
-            $errorResponse = $e->getResponse()->getBody()->getContents();
-            dd($errorResponse); // Dump the error response and exit
-        }
+{
+    try {
+        $response = $this->client->post('/api/admin/users', [
+            'json' => [
+                'email' => $email,
+                'login' => $username,
+                'password' => $password,
+            ],
+        ]);
+
+        $userData = json_decode($response->getBody(), true);
+
+        // Create a new MySQL database for the user
+        $this->createUserDatabase($username);
+
+        return $userData;
+    } catch (\GuzzleHttp\Exception\ClientException $e) {
+        // Inspect the error response
+        $errorResponse = $e->getResponse()->getBody()->getContents();
+        dd($errorResponse); // Dump the error response and exit
     }
-    
+}
 
     public function authenticateUser($username, $password)
     {
@@ -153,6 +159,19 @@ public function getDashboardsInFolder($apiToken, $folderId)
     } catch (\Exception $e) {
         \Log::error('Error getting dashboards in folder:', ['message' => $e->getMessage()]);
         return [];
+    }
+}
+
+private function createUserDatabase($username)
+{
+    // Sanitize the username to make it suitable for a database name
+    $dbName = preg_replace('/[^a-zA-Z0-9_]/', '_', $username) . '_db';
+
+    try {
+        DB::statement("CREATE DATABASE {$dbName}");
+        \Log::info("Created database: {$dbName}");
+    } catch (\Exception $e) {
+        \Log::error("Failed to create database: {$dbName}. Error: {$e->getMessage()}");
     }
 }
 
