@@ -16,27 +16,14 @@ class HomeController extends Controller
     }
 
     public function index(Request $request)
-{
-    $user = $request->user();
-    $apiToken = $user->api_token;
-    $userEmail = $user->email;
-
-    // Get the folder ID by the user's email
-    $folderId = $this->grafanaService->getFolderIdByTitle($apiToken, $userEmail);
-    \Log::info('User Email:', ['email' => $userEmail]);
-    \Log::info('Folder ID:', ['folderId' => $folderId]);
-
-    if ($folderId !== null) {
-        // Get the dashboards in the folder
-        $userDashboards = $this->grafanaService->getDashboardsInFolder($apiToken, $folderId);
-    } else {
-        // Handle the case when there's no folder with the user's email
-        $userDashboards = [];
+    {
+        $user = $request->user();
+        $apiToken = $user->api_token;
+        $grafanaUrl = rtrim(config('services.grafana.url'), '/');
+        $iframeUrl = "{$grafanaUrl}?auth={$apiToken}";
+    
+        return view('home', ['iframeUrl' => $iframeUrl]);
     }
-
-    \Log::info('User Dashboards:', ['dashboards' => $userDashboards]);
-
-    return view('home', ['userDashboards' => $userDashboards]);
-}
+    
 
 }

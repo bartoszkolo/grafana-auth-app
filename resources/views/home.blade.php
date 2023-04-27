@@ -1,36 +1,23 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">Dashboard</div>
-
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    You are logged in!
-                </div>
-                
-                <div class="card-body">
-                    <h3>Your Dashboards:</h3>
-                    <ul>
-                        @foreach($userDashboards as $dashboard)
-                            @if ($dashboard['type'] !== 'dash-folder')
-                                <li>
-                                    <a href="{{ route('dashboard.show', ['dashboardUid' => $dashboard['uid']]) }}">{{ $dashboard['title'] }}</a>
-                                </li>
-                            @endif
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+<style>
+    .iframe-container {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+        height: 0;
+        overflow: hidden;
+    }
+    .iframe-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+</style>
+<div class="iframe-container">
+    <iframe src="{{ $iframeUrl }}" frameborder="0"></iframe>
 </div>
 @endsection
