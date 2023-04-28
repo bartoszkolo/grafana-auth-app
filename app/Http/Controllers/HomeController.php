@@ -19,11 +19,14 @@ class HomeController extends Controller
     {
         $user = $request->user();
         $apiToken = $user->api_token;
-        $grafanaUrl = rtrim(config('services.grafana.url'), '/');
-        $iframeUrl = "{$grafanaUrl}?auth={$apiToken}";
     
+        // Log the user's API token and email for debugging
+        \Log::info('User API Token:', ['apiToken' => $apiToken]);
+        \Log::info('User Email:', ['email' => $user->email]);
+
+        $grafanaUrl = rtrim(config('services.grafana.url'), '/');
+        $iframeUrl = "{$grafanaUrl}?orgId=1&kiosk&auth={$apiToken}";
+
         return view('home', ['iframeUrl' => $iframeUrl]);
     }
-    
-
 }
