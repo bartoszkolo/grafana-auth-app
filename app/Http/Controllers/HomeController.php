@@ -19,11 +19,10 @@ class HomeController extends Controller
     {
         $user = $request->user();
         $apiToken = $user->api_token;
+    
         $grafanaUrl = rtrim(config('services.grafana.url'), '/');
-        $iframeUrl = "{$grafanaUrl}?auth={$apiToken}";
+        $iframeUrl = "{$grafanaUrl}?orgId=1&kiosk&auth={$apiToken}";
     
         return view('home', ['iframeUrl' => $iframeUrl]);
     }
-    
-
 }
