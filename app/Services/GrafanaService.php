@@ -78,7 +78,7 @@ public function createApiToken($username)
         $response = $this->client->post('/api/auth/keys', [
             'json' => [
                 'name' => $username . '-token',
-                'role' => 'Editor', // Set the appropriate role for the user
+                'role' => 'Viewer', // Set the appropriate role for the user
             ],
         ]);
 
